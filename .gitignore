@@ -1,1 +1,3 @@
 Plan/
+node_modules/
+.env
