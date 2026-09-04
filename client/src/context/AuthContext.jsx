@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
         }
         catch (err) {
             console.log(err);
+            throw err;
         }
     }
 
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         }
         catch (err) {
             console.log(err);
+            throw err;
         }
     }
 

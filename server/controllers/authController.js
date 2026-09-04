@@ -20,10 +20,21 @@ const registerUser = async (req, res) => {
 
         const user = await User.create({ name, email, password: hashedPassword })
 
+        const token = jwt.sign(
+            {
+                id: user._id,
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "30d",
+            }
+        )
+
         return res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            token,
             message: "User registered successfully!"
         });
 
