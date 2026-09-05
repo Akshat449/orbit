@@ -2,7 +2,8 @@ import Board from "../models/Board.js";
 
 const createBoard=async(req,res)=>{
     try{
-        const {title,workspaceId}=req.body;
+        const { workspaceId } = req.params;
+        const { title } = req.body;
         if(!title ||!workspaceId){
             return res.status(400).json({message:"Title and workspaceId are required"})
         }

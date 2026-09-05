@@ -2,12 +2,13 @@ import Workspace from "../models/Workspace.js";
 
 const createWorkspace= async(req,res)=>{
     try{
-        const {name} =req.body;
+        const {name, description} =req.body;
         if(!name){
             return res.status(400).json({message:"Workspace name is required"});
         }
         const workspace= await Workspace.create({
             name,
+            description,
             owner:req.user._id,
             members:[req.user._id]
         });
