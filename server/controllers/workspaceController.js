@@ -1,4 +1,5 @@
 import Workspace from "../models/Workspace.js";
+import User from "../models/User.js";
 
 const createWorkspace= async(req,res)=>{
     try{
@@ -11,6 +12,9 @@ const createWorkspace= async(req,res)=>{
             description,
             owner:req.user._id,
             members:[req.user._id]
+        });
+        await User.findByIdAndUpdate(req.user._id,
+            {$push:{workspaces:workspace._id}
         });
 
         return res.status(201).json({message:"Workspace created successfully",workspace});

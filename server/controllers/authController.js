@@ -78,7 +78,16 @@ const loginUser = async (req, res) => {
         return res.status(500).json({ message: "server error" })
     }
 }
-export { registerUser, loginUser };
+const getMe = async (req, res) => {
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+export { registerUser, loginUser,getMe };
+
 
 
 
