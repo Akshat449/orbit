@@ -140,9 +140,70 @@ const deleteCard = async (req, res) => {
     }
 }
 
+const reorderCards = async (req, res) => {
+    try {
+        const { cardId, sourceListId, destListId, newPosition } = req.body;
+
+        if (!cardId || !sourceListId || !destListId || newPosition === undefined) {
+            return res.status(400).json({ message: "cardId, sourceListId, destListId, and newPosition are required" });
+        }
+        const card = await Card.findById(cardId);
+        if (!card) return res.status(404).json({ message: "Card not found" });
+
+        const board = await Board.findById(card.board).populate("workspace");
+        if (!board) return res.status(404).json({ message: "Board not found" });
+
+        const isMember = board.workspace.members.some(memberId => memberId.equals(req.user._id));
+        if (!isMember) return res.status(403).json({ message: "You are not a member of this workspace" });
+
+        if (sourceListId === destListId) {
+            const cards = await Card.find({ list: sourceListId }).sort({ position: 1 });
+            const oldIndex = cards.findIndex(c => c._id.equals(cardId));
+            if (oldIndex === -1) return res.status(404).json({ message: "Card not found in list" });
+
+            const [movedCard] = cards.splice(oldIndex, 1);
+            cards.splice(newPosition, 0, movedCard);
+
+            const bulkOps = cards.map((c, index) => ({
+                updateOne: {
+                    filter: { _id: c._id },
+                    update: { $set: { position: index } }
+                }
+            }));
+
+            await Card.bulkWrite(bulkOps);
+            return res.status(200).json({ message: "Card reordered successfully" });
+        }
+
+
+        const oldPosition = card.position;
+
+        card.list = destListId;
+        card.position = newPosition;
+        await card.save();
+
+        await Card.updateMany(
+            { list: sourceListId, position: { $gt: oldPosition } },
+            { $inc: { position: -1 } }
+        );
+
+        await Card.updateMany(
+            { list: destListId, _id: { $ne: cardId }, position: { $gte: newPosition } },
+            { $inc: { position: 1 } }
+        );
+
+        return res.status(200).json({ message: "Card moved successfully" });
+
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 export {
     createCard,
     getCards,
     updateCard,
-    deleteCard
+    deleteCard, 
+    reorderCards
 };

@@ -120,4 +120,33 @@ const deleteList = async (req, res) => {
     }
 }
 
-export { createList, getLists, updateList, deleteList };
+const reorderLists = async (req, res) => {
+    try {
+        const { boardId } = req.params;
+        const { orderedListIds } = req.body;
+        if (!orderedListIds || !Array.isArray(orderedListIds) || orderedListIds.length === 0) {
+            return res.status(400).json({ message: "orderedListIds array is required" });
+        }
+        const board = await Board.findById(boardId).populate("workspace");
+        if (!board) return res.status(404).json({ message: "Board not found" });
+
+        const isMember = board.workspace.members.some(memberId => memberId.equals(req.user._id));
+        if (!isMember) return res.status(403).json({ message: "You are not a member of this board" });
+
+        const bulkOps = orderedListIds.map((listId, index) => ({
+            updateOne: {
+                filter: { _id: listId, board: boardId },
+                update: { $set: { position: index } }
+            }
+        }));
+
+        await List.bulkWrite(bulkOps);
+        return res.status(200).json({ message: "Lists reordered successfully" });
+    }
+    catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: "Server Error" })
+    }
+}
+
+export { createList, getLists, updateList, deleteList, reorderLists };
