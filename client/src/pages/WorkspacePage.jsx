@@ -24,7 +24,7 @@ const WorkspacePage = () => {
     const handleCreateBoard = async (e) => {
         e.preventDefault();
         try {
-            const newBoard = await createBoard(workspaceId,{title});
+            const newBoard = await createBoard(workspaceId, { title });
             setBoards([...boards, newBoard]);
             setIsModalOpen(false);
             setTitle("");
@@ -53,7 +53,7 @@ const WorkspacePage = () => {
 
                     {/* Board Cards */}
                     {boards.map((board) => (
-                        <Link to={`/board/${board._id}`} key={board._id}>
+                        <Link to={`/workspace/${workspaceId}/board/${board._id}`} key={board._id}>
                             <div className="p-6 rounded-2xl bg-dark-surface border border-dark-border shadow-2xl hover:border-primary/50 transition-all duration-200 cursor-pointer">
                                 <h3 className="text-lg font-semibold text-text-main">{board.title}</h3>
                             </div>

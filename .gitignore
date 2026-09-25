@@ -1,3 +1,4 @@
-Plan/
 node_modules/
 .env
+Plan/
+dist/

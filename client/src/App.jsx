@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import WorkspacePage from "./pages/WorkspacePage";
+import BoardPage from "./pages/BoardPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -27,6 +28,12 @@ function App() {
           <Route path="/" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/workspace/:workspaceId/board/:boardId" element={
+            <ProtectedRoute>
+              <BoardPage />
             </ProtectedRoute>
           } />
 
