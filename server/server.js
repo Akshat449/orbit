@@ -1,16 +1,31 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import protect from "./middleware/authMiddleware.js";
 import listRoutes from "./routes/listRoutes.js";
 import workspaceRoutes from "./routes/workspaceRoutes.js";
 import cardRoutes from "./routes/cardRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+import registerChatHandlers from "./sockets/chatHandler.js";
 
 dotenv.config();
 connectDB();
 const app = express();
+const httpServer = http.createServer(app);
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        credentials: true,
+        methods: ["GET", "POST"]
+    }
+});
+
+registerChatHandlers(io);
 
 app.use(cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -29,11 +44,13 @@ app.use("/api/boards/:boardId/lists", listRoutes);
 
 app.use("/api", cardRoutes);
 
+app.use("/api/boards/:boardId/messages", messageRoutes);
+
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
