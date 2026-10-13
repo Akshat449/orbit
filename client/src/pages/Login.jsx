@@ -16,7 +16,12 @@ const Login = () => {
       await login(email,password);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(
+        err.response?.data?.message ||
+        (err.message === "Network Error" || !err.response
+          ? "Unable to connect to server. Please ensure the backend is running."
+          : "Login failed")
+      );
     }
   }
 

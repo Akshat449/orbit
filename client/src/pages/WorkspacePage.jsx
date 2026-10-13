@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getBoards, createBoard } from "../api/boards";
+import InviteMemberModal from "../components/workspace/InviteMemberModal";
 
 const WorkspacePage = () => {
     const { workspaceId } = useParams();
     const [boards, setBoards] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [title, setTitle] = useState("");
 
     useEffect(() => {
@@ -38,10 +40,20 @@ const WorkspacePage = () => {
 
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-dark-border">
-                <Link to="/" className="text-text-muted hover:text-text-main transition-all duration-200">
+                <Link to="/" className="text-text-muted hover:text-text-main transition-all duration-200 text-sm">
                     ← Back to Dashboard
                 </Link>
                 <h1 className="text-2xl font-bold text-primary tracking-wide">Orbit</h1>
+                
+                <button
+                    onClick={() => setIsInviteModalOpen(true)}
+                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-sm font-medium transition-all duration-200 cursor-pointer shadow-sm"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM2.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 8 18a9.953 9.953 0 0 1-5.385-1.572ZM16.25 5.75a.75.75 0 0 0-1.5 0v2h-2a.75.75 0 0 0 0 1.5h2v2a.75.75 0 0 0 1.5 0v-2h2a.75.75 0 0 0 0-1.5h-2v-2Z" />
+                    </svg>
+                    <span>Members</span>
+                </button>
             </div>
 
             {/* Content */}
@@ -109,6 +121,13 @@ const WorkspacePage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Invite Member Modal */}
+            <InviteMemberModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                workspaceId={workspaceId}
+            />
         </div>
     );
 };

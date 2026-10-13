@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getLists, createList, updateList, deleteList, reorderLists } from "../api/lists";
 import { getCards, createCard, updateCard, deleteCard, reorderCards } from "../api/cards";
-
+import { AuthContext } from "../context/AuthContext";
+import useSocket from "../hooks/useSocket";
+import { getBoardMessages } from "../api/messages";
+import ChatPanel from "../components/chat/ChatPanel";
+import InviteMemberModal from "../components/workspace/InviteMemberModal";
 // DnD Imports
 import {
     DndContext,
@@ -43,6 +47,16 @@ const BoardPage = () => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Auth and Socket hooks
+    const { user } = useContext(AuthContext);
+    const { socket, isConnected } = useSocket();
+
+    // Chat UI states
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
     useEffect(() => {
         const fetchBoardData = async () => {
@@ -199,6 +213,53 @@ const BoardPage = () => {
         }
     };
 
+    useEffect(() => {
+        const loadMessages = async () => {
+            try {
+                setLoadingMessages(true);
+                const history = await getBoardMessages(boardId);
+                setMessages(history);
+            } catch (err) {
+                console.error("Failed to load chat history:", err);
+            } finally {
+                setLoadingMessages(false);
+            }
+        };
+
+        if (boardId) {
+            loadMessages();
+        }
+    }, [boardId]);
+
+    useEffect(() => {
+        if (!socket || !boardId) return;
+
+        // 1. Join this board's chat room
+        socket.emit("join-board", boardId);
+
+        // 2. Listen for incoming real-time messages
+        const handleNewMessage = (newMessage) => {
+            setMessages((prev) => [...prev, newMessage]);
+        };
+
+        socket.on("new-message", handleNewMessage);
+
+        // 3. Clean up when switching boards or leaving the page
+        return () => {
+            socket.emit("leave-board", boardId);
+            socket.off("new-message", handleNewMessage);
+        };
+    }, [socket, boardId]);
+
+    const handleSendMessage = (content) => {
+        if (!socket || !content.trim()) return;
+
+        socket.emit("send-message", {
+            boardId,
+            content: content.trim(),
+        });
+    };
+
     // --- DnD Handlers ---
     const handleDragStart = (event) => {
         setActiveItem(event.active.data.current);
@@ -229,7 +290,7 @@ const BoardPage = () => {
             const [movedCard] = sourceCards.splice(cardIndex, 1);
             movedCard.list = overListId;
             destCards.push(movedCard);
-
+            
             return {
                 ...prev,
                 [activeListId]: sourceCards,
@@ -296,6 +357,52 @@ const BoardPage = () => {
                     ← Back to Workspace
                 </Link>
                 <h1 className="text-2xl font-bold text-primary tracking-wide">Orbit</h1>
+
+                {/* Right Header Actions */}
+                <div className="flex items-center gap-3">
+                    {/* Invite Members Button */}
+                    <button
+                        onClick={() => setIsInviteModalOpen(true)}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-dark-border bg-dark-surface hover:bg-dark-border text-text-main text-sm font-medium transition-all duration-200 cursor-pointer shadow-sm"
+                        title="Invite members to this workspace"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-primary">
+                            <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM2.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 8 18a9.953 9.953 0 0 1-5.385-1.572ZM16.25 5.75a.75.75 0 0 0-1.5 0v2h-2a.75.75 0 0 0 0 1.5h2v2a.75.75 0 0 0 1.5 0v-2h2a.75.75 0 0 0 0-1.5h-2v-2Z" />
+                        </svg>
+                        <span>Invite</span>
+                    </button>
+
+                    {/* Chat Toggle Button */}
+                    <button
+                        onClick={() => setIsChatOpen((prev) => !prev)}
+                        className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-sm font-medium transition-all duration-200 cursor-pointer ${
+                            isChatOpen
+                                ? "bg-primary text-white border-primary shadow-sm"
+                                : "bg-dark-surface hover:bg-dark-border border-dark-border text-text-main"
+                        }`}
+                    >
+                        {/* Chat Bubble Icon */}
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-4 h-4"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.177 7.152.521 1.942.285 3.348 1.986 3.348 3.951v7.556c0 1.965-1.406 3.666-3.348 3.951a49.206 49.206 0 0 1-3.693.425 4.793 4.793 0 0 0-2.88 1.135l-2.023 1.706a.75.75 0 0 1-1.233-.574V18.75A49.043 49.043 0 0 1 4.848 18.28C2.906 17.994 1.5 16.293 1.5 14.328V6.722c0-1.965 1.406-3.666 3.348-3.951ZM6.75 8.25a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75Zm.75 3a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6Z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                        <span>Chat</span>
+                        {/* Live Connection Dot */}
+                        <span
+                            className={`w-2 h-2 rounded-full ${
+                                isConnected ? "bg-emerald-400" : "bg-text-muted"
+                            }`}
+                        />
+                    </button>
+                </div>
             </div>
 
             {/* Board Content Area */}
@@ -422,6 +529,25 @@ const BoardPage = () => {
                 onClose={() => setSelectedCard(null)}
                 onUpdate={handleUpdateCard}
                 onDelete={handleDeleteCard}
+            />
+
+             {/* Live Chat Drawer */}
+            <ChatPanel
+                isOpen={isChatOpen}
+                onClose={() => setIsChatOpen(false)}
+                messages={messages}
+                currentUser={user}
+                onSendMessage={handleSendMessage}
+                loading={loadingMessages}
+                disabled={!isConnected}
+                boardTitle="Board Chat"
+            />
+
+            {/* Invite Members Modal */}
+            <InviteMemberModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                workspaceId={workspaceId}
             />
         </div>
     );

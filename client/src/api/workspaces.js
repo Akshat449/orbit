@@ -10,5 +10,15 @@ const createWorkspace = async (workspaceData) => {
     return response.data.workspace;
 }
 
-export { getWorkspaces, createWorkspace };
+const getWorkspaceMembers = async (workspaceId) => {
+    const response = await api.get(`/workspaces/${workspaceId}/members`);
+    return response.data;
+}
+
+const addWorkspaceMember = async (workspaceId, email) => {
+    const response = await api.post(`/workspaces/${workspaceId}/members`, { email });
+    return response.data;
+}
+
+export { getWorkspaces, createWorkspace, getWorkspaceMembers, addWorkspaceMember };
 

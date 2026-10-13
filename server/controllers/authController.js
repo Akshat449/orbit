@@ -10,15 +10,18 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "All fields are required" })
         }
 
-        const existUser = await User.findOne({ email })
+        const normalizedEmail = email.toLowerCase().trim();
+        const trimmedName = name.trim();
+
+        const existUser = await User.findOne({ email: normalizedEmail });
 
         if (existUser) {
-            return res.status(400).json({ message: "User already exists" })
+            return res.status(400).json({ message: "User already exists" });
         }
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = await User.create({ name, email, password: hashedPassword })
+        const user = await User.create({ name: trimmedName, email: normalizedEmail, password: hashedPassword });
 
         const token = jwt.sign(
             {
@@ -28,7 +31,7 @@ const registerUser = async (req, res) => {
             {
                 expiresIn: "30d",
             }
-        )
+        );
 
         return res.status(201).json({
             _id: user._id,
@@ -39,8 +42,11 @@ const registerUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({ message: "Server Error" })
+        console.error("Register Error:", error.message);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+        return res.status(500).json({ message: "Server Error" });
     }
 }
 
@@ -49,17 +55,19 @@ const loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: "All fields are required" })
+            return res.status(400).json({ message: "All fields are required" });
         }
-        const user = await User.findOne({ email })
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" })
+            return res.status(400).json({ message: "Invalid credentials" });
         }
 
         const token = jwt.sign(
@@ -70,12 +78,12 @@ const loginUser = async (req, res) => {
             {
                 expiresIn: "30d",
             }
-        )
-        return res.status(200).json({ _id: user._id, email: user.email, name: user.name, token })
+        );
+        return res.status(200).json({ _id: user._id, email: user.email, name: user.name, token });
     }
     catch (err) {
-        console.log(err.message)
-        return res.status(500).json({ message: "server error" })
+        console.error("Login Error:", err.message);
+        return res.status(500).json({ message: "Server Error" });
     }
 }
 const getMe = async (req, res) => {

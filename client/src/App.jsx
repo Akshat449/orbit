@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { SocketProvider } from "./context/SocketContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -22,32 +23,34 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Protected Dashboard Route */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
+      <SocketProvider>
+        <Router>
+          <Routes>
+            {/* Protected Dashboard Route */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/workspace/:workspaceId/board/:boardId" element={
-            <ProtectedRoute>
-              <BoardPage />
-            </ProtectedRoute>
-          } />
+            <Route path="/workspace/:workspaceId/board/:boardId" element={
+              <ProtectedRoute>
+                <BoardPage />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/workspace/:workspaceId" element={
-            <ProtectedRoute>
-              <WorkspacePage />
-            </ProtectedRoute>
-          } />
+            <Route path="/workspace/:workspaceId" element={
+              <ProtectedRoute>
+                <WorkspacePage />
+              </ProtectedRoute>
+            } />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </Router>
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </Router>
+      </SocketProvider>
     </AuthProvider>
   );
 }
