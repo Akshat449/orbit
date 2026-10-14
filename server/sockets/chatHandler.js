@@ -24,9 +24,13 @@ function registerChatHandlers(io) {
         socket.on("join-board", async (boardId) => {
             try {
                 const board = await Board.findById(boardId).populate("workspace");
-                if (!board) return;
-                const isMember = board.workspace.members.some(m => m.equals(socket.user.id));
-                if (isMember) {
+                if (!board || !board.workspace) return;
+
+                const userId = (socket.user.id || socket.user._id)?.toString();
+                const isMember = board.workspace.members?.some(m => m.toString() === userId);
+                const isOwner = board.workspace.owner?.toString() === userId;
+
+                if (isMember || isOwner) {
                     socket.join(boardId);
                     console.log(`Socket ${socket.id} joined room ${boardId}`);
                 }
@@ -47,7 +51,7 @@ function registerChatHandlers(io) {
                 const message = await Message.create({
                     content: content.trim(),
                     board: boardId,
-                    sender: socket.user.id
+                    sender: socket.user.id || socket.user._id
                 });
 
                 const populatedMessage = await message.populate("sender", "name email");

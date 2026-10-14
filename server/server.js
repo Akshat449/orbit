@@ -17,18 +17,26 @@ connectDB();
 const app = express();
 const httpServer = http.createServer(app);
 
+// Allow both production frontend and local development
+const clientUrls = (process.env.CLIENT_URL || "http://localhost:5173")
+    .split(",")
+    .map((url) => url.trim().replace(/\/$/, ""));
+
+const allowedOrigins = [...new Set([...clientUrls, "http://localhost:5173"])];
+
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: allowedOrigins,
         credentials: true,
         methods: ["GET", "POST"]
-    }
+    },
+    transports: ["websocket", "polling"]
 });
 
 registerChatHandlers(io);
 
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(express.json());

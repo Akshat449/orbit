@@ -237,6 +237,12 @@ const BoardPage = () => {
         // 1. Join this board's chat room
         socket.emit("join-board", boardId);
 
+        // Rejoin room if socket reconnects
+        const handleConnect = () => {
+            socket.emit("join-board", boardId);
+        };
+        socket.on("connect", handleConnect);
+
         // 2. Listen for incoming real-time messages
         const handleNewMessage = (newMessage) => {
             setMessages((prev) => [...prev, newMessage]);
@@ -247,6 +253,7 @@ const BoardPage = () => {
         // 3. Clean up when switching boards or leaving the page
         return () => {
             socket.emit("leave-board", boardId);
+            socket.off("connect", handleConnect);
             socket.off("new-message", handleNewMessage);
         };
     }, [socket, boardId]);
