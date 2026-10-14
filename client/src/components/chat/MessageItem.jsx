@@ -3,7 +3,8 @@ import React from "react";
 const MessageItem = ({ message, currentUser }) => {
   // 1. Identify if the current logged-in user sent this message
   const senderId = message.sender?._id || message.sender;
-  const isOwn = currentUser?._id && senderId && currentUser._id.toString() === senderId.toString();
+  const currentUserId = currentUser?._id || currentUser?.id;
+  const isOwn = currentUserId && senderId && currentUserId.toString() === senderId.toString();
 
   // 2. Format sender display name
   const senderName = message.sender?.name || "Teammate";

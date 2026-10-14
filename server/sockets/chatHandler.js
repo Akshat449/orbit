@@ -45,7 +45,7 @@ function registerChatHandlers(io) {
         });
 
         socket.on("send-message", async ({ boardId, content }) => {
-            if (!content || !content.trim()) return;
+            if (!boardId || !content || !content.trim()) return;
 
             try {
                 const message = await Message.create({

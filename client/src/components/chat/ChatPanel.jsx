@@ -46,10 +46,17 @@ const ChatPanel = ({
             <div>
               <h2 className="text-sm font-semibold text-text-main flex items-center gap-2">
                 Chat
-                <span className="flex items-center gap-1 text-[11px] font-normal text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Live
-                </span>
+                {disabled ? (
+                  <span className="flex items-center gap-1 text-[11px] font-normal text-amber-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    Connecting
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-[11px] font-normal text-emerald-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live
+                  </span>
+                )}
               </h2>
               <p className="text-xs text-text-muted truncate max-w-[180px]">
                 {boardTitle}
