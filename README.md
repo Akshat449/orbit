@@ -50,12 +50,20 @@ Modern engineering and product teams frequently suffer from **tool fragmentation
 
 ### 📋 Agile Kanban Board Management
 - **Multi-List Workflows**: Add, rename, and delete custom columns with automatic position indexing.
+- **Dynamic Column Themes**: Visual stage accents with distinct glows (e.g. *In Progress* indigo aura, *Done* emerald accents, and high-contrast count badges).
+- **Smart Category Tags**: Automatic bracket parsing (`[Frontend]`, `[Backend]`, `[Real-Time]`, `[Architecture]`, `[Auth]`, `[Bug]`) rendering color-coded pill badges and task IDs (`#104`).
 - **Fluid Drag-and-Drop (`@dnd-kit`)**: Reorder cards within columns and move tasks seamlessly across different lists with smooth physics and drag overlays.
 - **Position Persistence**: Positional updates are batch-synchronized using MongoDB bulk operations to guarantee ordering persistence across reloads.
-- **Detailed Card Modal**: Inspect and update card titles and rich descriptions on demand.
+- **Detailed Card Modal**: Inspect and update card titles and rich descriptions on demand with one-click category tag selectors.
+
+### 🌐 Public Landing Page & Onboarding
+- **Interactive Product Showcase**: Interactive tabbed preview demonstrating Kanban flow, live chat, and workspace management without requiring pre-authentication.
+- **Frictionless Onboarding**: Clear feature walkthroughs, problem vs. solution value propositions, and direct pathways to create accounts or log in.
+- **Responsive Navigation**: Context-aware routing directing authenticated users straight to their dashboard.
 
 ### 💬 Real-Time Board-Scoped Chat
 - **Instant Communication**: Socket.io-powered room channels scoped strictly per board (`join-board` / `leave-board`).
+- **Toolbar-Mounted Chat**: Integrated directly on the board canvas toolbar alongside the `● Live Sync Active` status indicator.
 - **Persistent Message History**: Messages are stored in MongoDB and hydrated on room load with author metadata.
 - **Live Connection Feedback**: Visual indicators displaying real-time WebSocket connection state (`Live` vs. `Connecting`).
 - **Responsive Drawer UI**: Sleek slide-out chat sidebar with mobile backdrop overlay and auto-scroll message feeds.
@@ -166,7 +174,7 @@ Orbit/
 │   │   │   └── workspace/            # InviteMemberModal
 │   │   ├── context/                  # React Contexts (AuthContext, SocketContext)
 │   │   ├── hooks/                    # Custom hooks (useSocket)
-│   │   ├── pages/                    # Route views (Login, Signup, Dashboard, WorkspacePage, BoardPage)
+│   │   ├── pages/                    # Route views (LandingPage, Login, Signup, Dashboard, WorkspacePage, BoardPage)
 │   │   ├── App.jsx                   # Root routing & protected route wrappers
 │   │   ├── index.css                 # Global theme variables & scrollbar styles
 │   │   └── main.jsx                  # Application entry point
@@ -425,7 +433,10 @@ Client handshakes supply the JWT in `socket.handshake.auth.token`. Sockets lacki
   - [x] Workspace Member Email Invitations & Access Boundaries
   - [x] Production Cloud Deployment (Vercel + Render + MongoDB Atlas)
 - [ ] **Phase 2: Enhanced Task Context & Interactivity**
-  - [ ] Color-coded Labels & Tag Filtering
+  - [x] Public Landing Page with Interactive Product Demos
+  - [x] Color-coded Labels & Category Tagging System
+  - [x] Dynamic Column Stage Accents (In Progress, Completed, Review)
+  - [ ] Tag Filtering & Search Bar
   - [ ] Due Dates with Overdue Visual Warnings
   - [ ] Checklists / Subtasks progress indicators
   - [ ] Card comment threads & activity log audit trails
