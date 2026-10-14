@@ -1,20 +1,22 @@
-import { useState , useContext} from "react";
+import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
-      await login(email,password);
-      navigate("/");
+      await login(email, password);
+      navigate("/dashboard");
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -22,67 +24,104 @@ const Login = () => {
           ? "Unable to connect to server. Please ensure the backend is running."
           : "Login failed")
       );
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-dark-bg">
-      <div className="w-full max-w-md p-8 rounded-2xl bg-dark-surface border border-dark-border shadow-2xl">
-        
-        {/* Logo / Title */}
+    <div className="relative flex items-center justify-center min-h-screen p-4 overflow-hidden bg-[#090a10]">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative w-full max-w-md p-8 sm:p-10 rounded-3xl bg-[#10131d]/90 border border-[#22283b] shadow-2xl backdrop-blur-xl">
+        {/* Brand Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary tracking-wide">Orbit</h1>
-          <p className="text-text-muted mt-2 text-sm">Welcome back! Sign in to your workspace.</p>
+          <Link
+            to="/"
+            title="Back to Orbit Home"
+            className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-2xl bg-gradient-to-tr from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 text-indigo-400 shadow-inner hover:scale-105 hover:border-indigo-400 transition-all duration-200 cursor-pointer"
+          >
+            <svg className="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
+              <circle cx="12" cy="12" r="8" strokeDasharray="3 3" />
+              <path d="M12 2a10 10 0 1 0 10 10" strokeLinecap="round" opacity="0.6" />
+            </svg>
+          </Link>
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            Welcome back to <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Orbit</span>
+          </h1>
+          <p className="mt-2 text-sm text-[#8c95a8]">
+            Sign in to access your projects and collaborate with your team.
+          </p>
         </div>
 
-        {/* Error Message */}
+        {/* Error Notification */}
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
-            {error}
+          <div className="mb-6 p-3.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-300 text-sm flex items-start gap-2.5">
+            <svg className="w-5 h-5 shrink-0 text-red-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm text-text-muted mb-1.5">Email</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#8c95a8] mb-1.5">
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder="name@company.com"
               required
-              className="w-full px-4 py-3 rounded-lg bg-dark-bg border border-dark-border text-text-main placeholder-text-muted/50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl bg-[#090a10] border border-[#22283b] text-white placeholder-[#8c95a8]/50 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-text-muted mb-1.5">Password</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#8c95a8] mb-1.5">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full px-4 py-3 rounded-lg bg-dark-bg border border-dark-border text-text-main placeholder-text-muted/50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl bg-[#090a10] border border-[#22283b] text-white placeholder-[#8c95a8]/50 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 mt-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-hover cursor-pointer transition-all duration-200 shadow-lg shadow-primary/20"
+            disabled={loading}
+            className="w-full mt-3 py-3 px-4 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 active:scale-[0.99] transition-all duration-200 shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
-            Sign In
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              <span>Sign In to Dashboard</span>
+            )}
           </button>
         </form>
 
-        {/* Footer Link */}
-        <p className="text-center text-sm text-text-muted mt-6">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-primary hover:underline">
-            Sign up
-          </Link>
-        </p>
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-[#22283b] text-center">
+          <p className="text-sm text-[#8c95a8]">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

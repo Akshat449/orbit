@@ -16,9 +16,9 @@ const MessageList = ({ messages = [], currentUser, loading = false }) => {
     // 1. Loading State
     if (loading) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-4 text-text-muted">
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mb-2" />
-                <span className="text-xs">Loading messages...</span>
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-[#8c95a8]">
+                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2.5" />
+                <span className="text-xs font-medium">Loading conversation...</span>
             </div>
         );
     }
@@ -26,8 +26,8 @@ const MessageList = ({ messages = [], currentUser, loading = false }) => {
     // 2. Empty State
     if (messages.length === 0) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-text-muted select-none">
-                <div className="w-12 h-12 rounded-full bg-dark-surface border border-dark-border flex items-center justify-center mb-3 text-primary">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#8c95a8] select-none">
+                <div className="w-12 h-12 rounded-2xl bg-[#151926] border border-[#22283b] flex items-center justify-center mb-3 text-indigo-400 shadow-inner">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -43,9 +43,9 @@ const MessageList = ({ messages = [], currentUser, loading = false }) => {
                         />
                     </svg>
                 </div>
-                <p className="text-sm font-medium text-text-main">No messages yet</p>
-                <p className="text-xs text-text-muted mt-1">
-                    Be the first to say hello to the board!
+                <p className="text-xs font-semibold text-white">No messages yet</p>
+                <p className="text-[11px] text-[#8c95a8] mt-1 max-w-[200px]">
+                    Be the first to say hello or share project updates with your team.
                 </p>
             </div>
         );
@@ -53,7 +53,7 @@ const MessageList = ({ messages = [], currentUser, loading = false }) => {
 
     // 3. Normal Message Feed
     return (
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-1">
             {messages.map((msg, index) => (
                 <MessageItem
                     key={msg._id || index}
@@ -61,7 +61,6 @@ const MessageList = ({ messages = [], currentUser, loading = false }) => {
                     currentUser={currentUser}
                 />
             ))}
-            {/* Invisible anchor element to auto-scroll into view */}
             <div ref={messagesEndRef} />
         </div>
     );

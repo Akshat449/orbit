@@ -24,12 +24,12 @@ const ChatPanel = ({
       />
 
       {/* 2. Chat Sidebar Drawer */}
-      <aside className="fixed top-0 right-0 h-screen w-full sm:w-96 bg-dark-bg border-l border-dark-border z-50 flex flex-col shadow-2xl animate-in slide-in-from-right duration-200">
+      <aside className="fixed top-0 right-0 h-screen w-full sm:w-96 bg-[#10131d] border-l border-[#22283b] z-50 flex flex-col shadow-2xl animate-in slide-in-from-right duration-200">
         
         {/* Header */}
-        <div className="p-4 border-b border-dark-border bg-dark-surface flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+        <div className="p-4 border-b border-[#22283b] bg-[#151926] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -44,21 +44,21 @@ const ChatPanel = ({
               </svg>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-text-main flex items-center gap-2">
-                Chat
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-white">Board Chat</h2>
                 {disabled ? (
-                  <span className="flex items-center gap-1 text-[11px] font-normal text-amber-400">
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                     Connecting
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-[11px] font-normal text-emerald-400">
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Live
                   </span>
                 )}
-              </h2>
-              <p className="text-xs text-text-muted truncate max-w-[180px]">
+              </div>
+              <p className="text-[11px] text-[#8c95a8] truncate max-w-[180px] mt-0.5">
                 {boardTitle}
               </p>
             </div>
@@ -69,7 +69,7 @@ const ChatPanel = ({
             type="button"
             onClick={onClose}
             title="Close chat"
-            className="p-1.5 rounded-lg text-text-muted hover:text-text-main hover:bg-dark-bg border border-transparent hover:border-dark-border transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-[#8c95a8] hover:text-white hover:bg-[#10131d] border border-transparent hover:border-[#22283b] transition-colors cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

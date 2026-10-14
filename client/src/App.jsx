@@ -7,6 +7,7 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import WorkspacePage from "./pages/WorkspacePage";
 import BoardPage from "./pages/BoardPage";
+import LandingPage from "./pages/LandingPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -26,8 +27,11 @@ function App() {
       <SocketProvider>
         <Router>
           <Routes>
+            {/* Public Landing (Home) Page */}
+            <Route path="/" element={<LandingPage />} />
+
             {/* Protected Dashboard Route */}
-            <Route path="/" element={
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>

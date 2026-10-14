@@ -56,29 +56,59 @@ const CardModal = ({ card, listTitle, isOpen, onClose, onUpdate, onDelete }) => 
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
             {/* Click outside backdrop */}
             <div className="fixed inset-0" onClick={onClose} />
 
             {/* Modal Box */}
-            <div className="relative w-full max-w-lg bg-dark-surface border border-dark-border rounded-2xl shadow-2xl p-6 z-10 flex flex-col gap-5 text-text-main">
+            <div className="relative w-full max-w-lg bg-[#10131d] border border-[#22283b] rounded-3xl shadow-2xl p-6 sm:p-8 z-10 flex flex-col gap-6 text-[#f1f3f9]">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                        <span className="text-xs font-medium text-text-muted uppercase tracking-wider">
-                            In list: <span className="text-primary font-semibold">{listTitle || "Column"}</span>
-                        </span>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[11px] font-semibold text-[#8c95a8] uppercase tracking-wider">
+                                Column
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                {listTitle || "Column"}
+                            </span>
+                        </div>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Card title..."
-                            className="w-full mt-1.5 px-3 py-2 text-lg font-semibold bg-dark-bg border border-dark-border rounded-lg text-text-main focus:border-primary outline-none transition-all"
+                            className="w-full px-3.5 py-2 text-lg font-bold bg-[#090a10] border border-[#22283b] rounded-xl text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all"
                         />
+
+                        {/* Quick Tag Selector Chips */}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                            <span className="text-[11px] text-[#8c95a8] mr-1">Tag:</span>
+                            {[
+                                { label: "Frontend", color: "text-blue-400 bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20" },
+                                { label: "Backend", color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20" },
+                                { label: "Real-Time", color: "text-violet-400 bg-violet-500/10 border-violet-500/20 hover:bg-violet-500/20" },
+                                { label: "Architecture", color: "text-amber-400 bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20" },
+                                { label: "Auth", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20" },
+                                { label: "Bug", color: "text-rose-400 bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20" },
+                            ].map((t) => (
+                                <button
+                                    key={t.label}
+                                    type="button"
+                                    onClick={() => {
+                                        const clean = title.replace(/^\[(.*?)\]\s*/, "");
+                                        setTitle(`[${t.label}] ${clean}`);
+                                    }}
+                                    className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-lg border transition-all cursor-pointer hover:scale-105 active:scale-95 ${t.color}`}
+                                >
+                                    +{t.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-text-muted hover:text-text-main p-1.5 rounded-lg hover:bg-dark-bg transition-colors cursor-pointer"
+                        className="text-[#8c95a8] hover:text-white p-2 rounded-xl hover:bg-[#151926] transition-colors cursor-pointer"
                         title="Close (Esc)"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,8 +119,8 @@ const CardModal = ({ card, listTitle, isOpen, onClose, onUpdate, onDelete }) => 
 
                 {/* Description Body */}
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-text-muted flex items-center gap-1.5 uppercase tracking-wide">
-                        <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label className="text-xs font-semibold text-[#8c95a8] uppercase tracking-wider flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
                         </svg>
                         Description
@@ -99,18 +129,18 @@ const CardModal = ({ card, listTitle, isOpen, onClose, onUpdate, onDelete }) => 
                         rows="4"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Add a more detailed description..."
-                        className="w-full p-3 rounded-xl bg-dark-bg border border-dark-border text-sm text-text-main placeholder-text-muted/60 focus:border-primary outline-none resize-none transition-all"
+                        placeholder="Add a more detailed description or notes..."
+                        className="w-full p-3.5 rounded-2xl bg-[#090a10] border border-[#22283b] text-sm text-white placeholder-[#8c95a8]/50 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none resize-none transition-all"
                     />
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="flex items-center justify-between pt-3 border-t border-dark-border">
+                <div className="flex items-center justify-between pt-4 border-t border-[#22283b]/60">
                     <button
                         type="button"
                         onClick={handleDelete}
                         disabled={isDeleting}
-                        className="px-3.5 py-2 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/30 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        className="px-3.5 py-2 text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20 rounded-xl transition-all duration-150 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -118,11 +148,11 @@ const CardModal = ({ card, listTitle, isOpen, onClose, onUpdate, onDelete }) => 
                         {isDeleting ? "Deleting..." : "Delete Card"}
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-xs font-medium text-text-muted hover:text-text-main hover:bg-dark-bg rounded-lg transition-colors cursor-pointer"
+                            className="px-4 py-2 text-xs font-semibold text-[#8c95a8] hover:text-white hover:bg-[#151926] rounded-xl transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -130,7 +160,7 @@ const CardModal = ({ card, listTitle, isOpen, onClose, onUpdate, onDelete }) => 
                             type="button"
                             onClick={handleSave}
                             disabled={isSaving || !title.trim()}
-                            className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-hover transition-colors shadow-md disabled:opacity-50 cursor-pointer"
+                            className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 text-white text-xs font-semibold rounded-xl shadow-md shadow-indigo-500/20 transition-all duration-150 disabled:opacity-50 cursor-pointer"
                         >
                             {isSaving ? "Saving..." : "Save Changes"}
                         </button>

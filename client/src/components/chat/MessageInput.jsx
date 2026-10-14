@@ -18,16 +18,16 @@ const MessageInput = ({ onSendMessage, disabled = false }) => {
     return (
         <form
             onSubmit={handleSubmit}
-            className="p-3 border-t border-dark-border bg-dark-surface flex items-center gap-2"
+            className="p-3.5 border-t border-[#22283b] bg-[#151926] flex items-center gap-2"
         >
             {/* Text Input */}
             <input
                 type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder={disabled ? "Connecting to chat..." : "Type a message..."}
+                placeholder={disabled ? "Connecting to live chat..." : "Type a message to the board..."}
                 disabled={disabled}
-                className="flex-1 px-4 py-2 text-sm rounded-lg bg-dark-bg border border-dark-border text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 text-xs rounded-xl bg-[#090a10] border border-[#22283b] text-white placeholder-[#8c95a8]/50 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all duration-200 disabled:opacity-50"
             />
 
             {/* Send Button */}
@@ -35,12 +35,12 @@ const MessageInput = ({ onSendMessage, disabled = false }) => {
                 type="submit"
                 disabled={isSendDisabled}
                 title="Send message"
-                className={`p-2.5 rounded-lg font-medium text-white transition-all flex items-center justify-center ${isSendDisabled
-                        ? "bg-dark-border text-text-muted opacity-50 cursor-not-allowed"
-                        : "bg-primary hover:bg-primary-hover active:scale-95 cursor-pointer shadow-sm"
-                    }`}
+                className={`p-2.5 rounded-xl font-medium text-white transition-all duration-200 flex items-center justify-center ${
+                    isSendDisabled
+                        ? "bg-[#22283b] text-[#8c95a8] opacity-40 cursor-not-allowed"
+                        : "bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 active:scale-95 cursor-pointer shadow-md shadow-indigo-500/20"
+                }`}
             >
-                {/* Send Paper Plane Icon */}
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
